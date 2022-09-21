@@ -13,7 +13,7 @@ module.exports = {
     networks: {
         hardhat: {
             chainId: 31337,
-            blockCOnfirmations: 1,
+            blockConfirmations: 1,
         },
         goerli: {
             chainId: 5,
@@ -57,6 +57,6 @@ module.exports = {
         coinmarketcap: COINMARKETCAP_API_KEY,
     },
     mocha: {
-        timeout: 200000, // 500 seconds max for running tests
+        timeout: 500000, // 500 seconds max for running tests
     },
 }

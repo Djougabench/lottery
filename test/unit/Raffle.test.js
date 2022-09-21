@@ -1,5 +1,5 @@
 const { assert, expect } = require("chai")
-const { getNamedAccounts, deployments, ethers } = require("hardhat")
+const { getNamedAccounts, deployments, ethers,network } = require("hardhat")
 const { developmentChains, networkConfig } = require("../../helper-hardhat-config")
 
 !developmentChains.includes(network.name)
@@ -16,10 +16,10 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
               raffleEntranceFee = await raffle.getEntranceFee()
               interval = await raffle.getInterval()
           })
+
           describe("constructor", () => {
               it("Initializes the raffle correctly", async () => {
                   //Ideali 1 assert per it
-
                   const raffleState = await raffle.getRaffleState()
                   assert.equal(raffleState.toString(), "0")
                   assert.equal(interval.toString(), networkConfig[chainId]["interval"])
@@ -32,6 +32,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                       "Raffle__NotEnoughETHEntered"
                   )
               })
+
               it("records players when they enter", async () => {
                   await raffle.enterRaffle({ value: raffleEntranceFee })
                   const playerFromContract = await raffle.getPlayer(0)
@@ -62,6 +63,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                   const { upkeepNeeded } = await raffle.callStatic.checkUpkeep([])
                   assert(!upkeepNeeded)
               })
+
               it("returns false if raffle isn't open", async () => {
                   await raffle.enterRaffle({ value: raffleEntranceFee })
                   await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
@@ -72,6 +74,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                   assert.equal(raffleState.toString(), "1")
                   assert.equal(upkeepNeeded, false)
               })
+
               it("returns false if enough time hasn't passed", async () => {
                   await raffle.enterRaffle({ value: raffleEntranceFee })
                   await network.provider.send("evm_increaseTime", [interval.toNumber() - 5]) // use a higher number here if this test fails
@@ -120,6 +123,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                   await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
                   await network.provider.request({ method: "evm_mine", params: [] })
               })
+
               it("only be called after performUpkeep ", async () => {
                   await expect(
                       vrfCoordinatorV2Mock.fulfillRandomWords(0, raffle.address)
@@ -144,6 +148,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                     const accountConnectedRaffle = raffle.connect(accounts[i]) // Returns a new instance of the Raffle contract connected to player
                     await accountConnectedRaffle.enterRaffle({ value: raffleEntranceFee })
                 }
+                
                 const startingTimeStamp = await raffle.getLatestTimeStamp() // stores starting timestamp (before we fire our event)
 
                 // This will be more important for our staging tests...
@@ -174,6 +179,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                                     .toString()
                             )
                             assert(endingTimeStamp > startingTimeStamp)
+                        
                             resolve() // if try passes, resolves the promise 
                         } catch (e) { 
                             reject(e) // if try fails, rejects the promise
