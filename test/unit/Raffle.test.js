@@ -35,7 +35,7 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
 
               it("records players when they enter", async () => {
                   await raffle.enterRaffle({ value: raffleEntranceFee })
-                  const playerFromContract = await raffle.getPlayer(0)
+                  const playerFromContract = await rafflcleare.getPlayer(0)
                   assert.equal(playerFromContract, deployer)
               })
               it("emits event on enter", async () => {
@@ -181,7 +181,8 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
                             assert(endingTimeStamp > startingTimeStamp)
                         
                             resolve() // if try passes, resolves the promise 
-                        } catch (e) { 
+                        } catch (error) { 
+                            console.log(error)
                             reject(e) // if try fails, rejects the promise
                         }
                     })
